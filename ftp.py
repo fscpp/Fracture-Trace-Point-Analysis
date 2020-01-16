@@ -203,7 +203,7 @@ def analyze_profile (arr3d, msk, mtrx, air, rs, md=None):
                             edg_edg_MA = pk_aver - arr[edge_sx:edge_dx+1] #Array of vertical heights for each pixel
                             edg_edg_MA = edg_edg_MA[edg_edg_MA>0] #Remove negative values
                             MA.append (np.sum(edg_edg_MA/(pk_aver-air))*10) #Relative peaks MA*10 (in px)
-                            ph = (float(mtrx-arr[i])/float(mtrx-air))*1000
+                            ph = (float(mtrx-arr[i])/float(mtrx-air))*10
                             PH.append(round(ph, 1)) #PH (dimensionless)
                 if true_valleys:
                     value = np.take (arr3d[n, m, :], true_valleys) #Return the value of each valley
@@ -282,6 +282,6 @@ path = (r"PutPathHere")
 #vox_dim: size of the 3D local crop for orientation analysis
 #matrix: mean matrix CT-value
 #air: mean air CT-value
-#res: FWHM value will only be measured for structures with an Edge Response (ER)>res
+#res: FWHM value will only be measured for structures with an Edge Response (ER)>res and if the FTP is below the FWHM baseline value [((mtrx-air)/2)+air]
 #z_corr: for cubic voxel is equal to 1 (put None in that case), for non cubic voxel (with x=y) is z/x
 analyze_image_stack (path, vox_dim=11, matrix=255, air=0, res=1, z_corr=None)
