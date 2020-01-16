@@ -278,5 +278,10 @@ def ftp_orientation_cpu(img, dt, d, h, H=True, core=True, z_c=None):
             orient.append([da, dd])
     return orient[0]
 #
-path = (r"C:\Users\Franco\Desktop\py3\test_py3")
-analyze_image_stack (path, vox_dim=11, matrix=255, air=0, res=1, z_corr=4)
+path = (r"PutPathHere")
+#vox_dim: size of the 3D local crop for orientation analysis
+#matrix: mean matrix CT-value
+#air: mean air CT-value
+#res: FWHM value will only be measured for structures with a LSF>res
+#z_corr: for cubic voxel is equal to 1 (put None in that case), for non cubic voxel (with x=y) is z/x
+analyze_image_stack (path, vox_dim=11, matrix=255, air=0, res=1, z_corr=1)
