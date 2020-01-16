@@ -145,13 +145,13 @@ def analyze_profile (arr3d, msk, mtrx, air, rs, md=None):
                 valleys, _ = scipy.signal.find_peaks (arr_v, height=(height_min, height_max)) #Return peaks indexes of the arr_v (valleys of arr)
                 valleys = np.intersect1d (valleys, msk_indx, assume_unique=True) #Remove indexes not present in the mask
                 del arr_v; del msk_indx #Delete useless variables to empty the RAM
-                true_valleys = [] #Valleys that miss an edge (because close to the background which is equal to 0)
-                res = [] #average of the 10-90% of the x-distance between the valley-edge 
-                PH = [] #PH measured from the highest edge
+                true_valleys = [] #Valleys that miss an edge are filtered (because close to the background which is equal to 0)
+                res = [] #average of the 10-90% of the x-distance between the valley-edge or LSF
+                PH = [] #PH
                 FWHM = [] #FWHM at half of PH
-                MA = [] #MA (sum of the y-distances) from the highest edge to arr[n]
+                MA = [] #MA (sum of the y-distances)
                 valleys = valleys[valleys<mtrx]
-                fwhm = ((mtrx-air)/2)+air
+                fwhm = ((mtrx-air)/2)+air #FWHM baseline
                 if valleys.size > 0 and peaks.size > 0: #Check if the arrays are not empty
                     for i in valleys:                
                         idx = np.searchsorted (peaks, i) #It tell the index where the valley should be inserted to maintain order
@@ -161,7 +161,7 @@ def analyze_profile (arr3d, msk, mtrx, air, rs, md=None):
                             pass
                         else:
                             true_valleys.append(i)
-                            size = ((edge_dx-edge_sx)/2)*0.8
+                            size = ((edge_dx-edge_sx)/2)*0.8 #Edge Response (ER in px)
                             if size>rs and arr[i]<fwhm:
                                 FWHM_sx_edge = i-closest_indx(np.flip(arr[edge_sx:i+1]), fwhm) #Index position of FWHM at it's left side
                                 FWHM_dx_edge = i+closest_indx(arr[i:edge_dx+1], fwhm) #Index position of FWHM at it's right side
@@ -196,15 +196,15 @@ def analyze_profile (arr3d, msk, mtrx, air, rs, md=None):
                                 FWHM_sx_edge = 0.0 #Index position of FWHM at it's left side
                                 FWHM_dx_edge = 0.0 #Index position of FWHM at it's right side
                                 pass
-                            FWHM.append ((FWHM_dx_edge - FWHM_sx_edge)*10) #FWHM for calibraction
-                            res.append (size) #Edge response
+                            FWHM.append ((FWHM_dx_edge - FWHM_sx_edge)*10) #FWHM*10 for calibraction
+                            res.append (size) #Edge Response (ER)
                             pk_aver = (float(arr[edge_sx]+arr[edge_dx])/2)
                             pk_aver = pk_aver if pk_aver>air else mtrx
-                            edg_edg_MA = pk_aver - arr[edge_sx:edge_dx+1] #Array of vertical heights for each pixel (from the max edge value)
-                            edg_edg_MA = edg_edg_MA[edg_edg_MA>0]
-                            MA.append (np.sum(edg_edg_MA/(pk_aver-air))*10) #Relative peaks MA
-                            ph = (float(mtrx-arr[i])/float(mtrx-air))*1000 #PH estimated with the original formula
-                            PH.append(round(ph, 1))
+                            edg_edg_MA = pk_aver - arr[edge_sx:edge_dx+1] #Array of vertical heights for each pixel
+                            edg_edg_MA = edg_edg_MA[edg_edg_MA>0] #Remove negative values
+                            MA.append (np.sum(edg_edg_MA/(pk_aver-air))*10) #Relative peaks MA*10 (in px)
+                            ph = (float(mtrx-arr[i])/float(mtrx-air))*1000
+                            PH.append(round(ph, 1)) #PH (dimensionless)
                 if true_valleys:
                     value = np.take (arr3d[n, m, :], true_valleys) #Return the value of each valley
                     arr_min3D[n, m, true_valleys] = 255 #Fill the array of 255 in the valley index
@@ -282,6 +282,6 @@ path = (r"PutPathHere")
 #vox_dim: size of the 3D local crop for orientation analysis
 #matrix: mean matrix CT-value
 #air: mean air CT-value
-#res: FWHM value will only be measured for structures with a LSF>res
+#res: FWHM value will only be measured for structures with an Edge Response (ER)>res
 #z_corr: for cubic voxel is equal to 1 (put None in that case), for non cubic voxel (with x=y) is z/x
 analyze_image_stack (path, vox_dim=11, matrix=255, air=0, res=1, z_corr=1)
