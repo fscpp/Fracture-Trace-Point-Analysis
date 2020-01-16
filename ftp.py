@@ -108,7 +108,7 @@ def analyze_image_stack (path, vox_dim, matrix=None, air=None, res=None, z_corr=
     ##########################################################################################################################################
     arr_minHV3D = arr_minHV3D[eg_eg:-eg_eg,eg_eg:-eg_eg,eg_eg:-eg_eg] #Crop the image to remove the zero padded before and restore shape
     io.imsave ("img_3dHV.tif", arr_minHV3D); #Save the 3d minima image as TIF
-    del arr_minHV3D; #del arr_HV3D_rec #Delete useless variables to empty the RAM
+    del arr_minHV3D; #Delete useless variables to empty the RAM
     print ("\nSaving data...")
     data_format = " z,   y,   x,  da,  dd, val, res,FWHM,  PH,  MA"
     dataH = np.array (dataH, copy=False)#.astype (int);
@@ -284,4 +284,4 @@ path = (r"PutPathHere")
 #air: mean air CT-value
 #res: FWHM value will only be measured for structures with an Edge Response (ER)>res
 #z_corr: for cubic voxel is equal to 1 (put None in that case), for non cubic voxel (with x=y) is z/x
-analyze_image_stack (path, vox_dim=11, matrix=255, air=0, res=1, z_corr=1)
+analyze_image_stack (path, vox_dim=11, matrix=255, air=0, res=1, z_corr=None)
