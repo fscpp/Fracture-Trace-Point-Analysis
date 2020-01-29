@@ -40,30 +40,20 @@ def analyze_image_stack (path, vox_dim, matrix=None, air=None, res=None, z_corr=
     #Check the module to use for opening the images
     os.chdir (path_img)
     #Tries different modules of io.imread to open the images with correct shape
-    if np.array(io.imread(img_stack[0], plugin='pil')).ndim==2:
-        module_img='pil'
-    elif np.array(io.imread(img_stack[0], plugin='imageio')).ndim==2:
-        module_img='imageio'
-    elif np.array(io.imread(img_stack[0], plugin='tifffile')).ndim==2:
-        module_img='tifffile'
-    elif np.array(io.imread(img_stack[0], plugin='imread')).ndim==2:
-        module_img='imread'
-    else:
-        raise ValueError("Cannot open image properly with skimage.io")
-    if np.array(io.imread (mask_stack[0], plugin='pil')).ndim==2:
-        module_msk='pil'
-    elif np.array(io.imread (mask_stack[0], plugin='imageio')).ndim==2:
-        module_msk='imageio'
-    elif np.array(io.imread(mask_stack[0], plugin='tifffile')).ndim==2:
-        module_msk='tifffile'
-    elif np.array(io.imread(mask_stack[0], plugin='imread')).ndim==2:
-        module_msk='imread'
-    else:
+    modules = ['imageio','pil','tifffile','matplotlib']
+    module_i=[]
+    module_m=[]
+    for n, i in enumerate(modules):
+        if np.array(io.imread(img_stack[0], plugin=i)).ndim==2 and len(module_i)==0:
+            module_i = modules[n]
+        if np.array(io.imread(mask_stack[0], plugin=i)).ndim==2 and len(module_m)==0:
+            module_m = modules[n]
+    if not module_i or not module_m:
         raise ValueError("Cannot open mask properly with skimage.io")
     #Open the Images
     for i in zip (img_stack, mask_stack):
-        img3D.append (io.imread (i[0], plugin=module_img)) #Open the 2D image slice as an array
-        img_mask3D.append (io.imread (i[1], plugin=module_msk)) #Open the 2D mask_image slice as an array
+        img3D.append (io.imread (i[0], plugin=module_i)) #Open the 2D image slice as an array
+        img_mask3D.append (io.imread (i[1], plugin=module_m)) #Open the 2D mask_image slice as an array
     del img_stack; del mask_stack #Delete useless variables to empty the RAM
     img3D = np.array (img3D, copy=False) #Convert list to a numpy array
     img_mask3D = np.array (img_mask3D, copy=False, dtype="uint8") #Convert list to a numpy array
