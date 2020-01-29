@@ -88,12 +88,12 @@ def analyze_image_stack (path, vox_dim, matrix=None, air=None, res=None, z_corr=
     print ("\nCalculating orientations on {} points...".format(len(dataH)+len(dataV)))  
     if psutil.virtual_memory()[2]>85: raise ValueError("Low memory. {}% used.".format(psutil.virtual_memory()[2])) #Stops script if RAM is full
     half_dim = vox_dim//2
-    rs = Parallel(n_jobs=6)(delayed(ftp_orientation_cpu)(arr_minHV3D, dataH[n], vox_dim, half_dim, H=True, core=True, z_c=z_corr) for n in tqdm(range(len(dataH)), desc='Orientation analysis', ncols=100)) #CPU1
-    dataH = Parallel(n_jobs=6)(delayed(np.insert)(dataH[n], 3, rs[n]) for n in tqdm(range(len(dataH)), desc='Inserting orientation data', ncols=100)); del rs #CPU2
+    rs = Parallel(n_jobs=-1)(delayed(ftp_orientation_cpu)(arr_minHV3D, dataH[n], vox_dim, half_dim, H=True, core=True, z_c=z_corr) for n in tqdm(range(len(dataH)), desc='Orientation analysis', ncols=100)) #CPU1
+    dataH = Parallel(n_jobs=-1)(delayed(np.insert)(dataH[n], 3, rs[n]) for n in tqdm(range(len(dataH)), desc='Inserting orientation data', ncols=100)); del rs #CPU2
     elapsed_2 = timeit.default_timer(); print ("{}\tH points are done....it took {}s".format(len(dataH), round(elapsed_2 - elapsed_1), 2)) #Stops script if RAM is full
     if psutil.virtual_memory()[2]>85: raise ValueError("Low memory. {}% used.".format(psutil.virtual_memory()[2]))
-    rs = Parallel(n_jobs=6)(delayed(ftp_orientation_cpu)(arr_minHV3D, dataV[n], vox_dim, half_dim, H=False, core=True, z_c=z_corr) for n in tqdm(range(len(dataV)), desc='Orientation analysis', ncols=100)) #CPU1
-    dataV = Parallel(n_jobs=6)(delayed(np.insert)(dataV[n][3:], 0, ([dataV[n][0], dataV[n][2], dataV[n][1], rs[n][0], rs[n][1]])) for n in tqdm(range(len(dataV)), desc='Inserting orientation data', ncols=100)); del rs  #CPU2
+    rs = Parallel(n_jobs=-1)(delayed(ftp_orientation_cpu)(arr_minHV3D, dataV[n], vox_dim, half_dim, H=False, core=True, z_c=z_corr) for n in tqdm(range(len(dataV)), desc='Orientation analysis', ncols=100)) #CPU1
+    dataV = Parallel(n_jobs=-1)(delayed(np.insert)(dataV[n][3:], 0, ([dataV[n][0], dataV[n][2], dataV[n][1], rs[n][0], rs[n][1]])) for n in tqdm(range(len(dataV)), desc='Inserting orientation data', ncols=100)); del rs  #CPU2
     elapsed_3 = timeit.default_timer(); print ("{}\tV points are done...it took {}s".format(len(dataV), round(elapsed_3 - elapsed_2), 2))
     ##########################################################################################################################################
     arr_minHV3D = arr_minHV3D[eg_eg:-eg_eg,eg_eg:-eg_eg,eg_eg:-eg_eg] #Crop the image to remove the zero padded before and restore shape
