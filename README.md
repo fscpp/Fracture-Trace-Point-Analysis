@@ -20,5 +20,7 @@ To run the program:
 All the results will be stored in a new folder called "Minima_Analysis" (created by the program).
 This folder will be created in the directory provided. The aperture parameters are stored as integers by multiplying them to 10. Thus, they must be divided by the same number if you want to obtain the measured value (i.e. real FWHM=FWHM/10; MA=MA/10; PH=PH/10).
 
-If using the program, please cite: Cappuccio F., Toy V., Mills S., Adam L., Three-dimensional separation and characterization of fractures in X-ray computed tomigraphic images of rocks.
+Computation time: the FTP analysis presents moderate variations in computation time (which is always relatively short) between images of different sizes. For example, for 3D cubic images the processing times calculated on an i7-8750H are {size axis of image (px), computation time (s)}: {51, 5}, {102, 7}, {510, 64}, {1020, 225}, {1275, 404}.
+
+If using the program, please cite: Cappuccio F., Toy V., Mills S., Adam L., Three-dimensional separation and characterization of fractures in X-ray computed tomographic images of rocks.
 Test sample and scripts of analysis are present in the repository "Test-sample-and-scripts"
