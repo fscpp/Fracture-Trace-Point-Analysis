@@ -23,4 +23,5 @@ This folder will be created in the directory provided. The aperture parameters a
 Computation time: the FTP analysis presents moderate variations in computation time (which is always relatively short) between images of different sizes. For example, for 3D cubic images the processing times calculated on an i7-8750H are {size axis of image (px), computation time (s)}: {51, 5}, {102, 7}, {510, 64}, {1020, 225}, {1275, 404}.
 
 If using the program, please cite: Cappuccio F., Toy V., Mills S., Adam L., Three-dimensional separation and characterization of fractures in X-ray computed tomographic images of rocks.
+
 Test sample and scripts of analysis are present in the repository "Test-sample-and-scripts"
